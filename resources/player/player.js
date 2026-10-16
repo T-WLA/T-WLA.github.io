@@ -265,7 +265,7 @@ async function init() {
     {id:'Cup',title:'Cup Nesting',description:'Follow the grasp, transfer, and placement of a paper cup.'},
     {id:'Bag',title:'Bag Manipulation',description:'Explore fingertip contact during deformable-object manipulation.'},
     {id:'Paper',title:'Paper Manipulation',description:'Observe the contact pattern as the hand handles a sheet of paper.'}].filter(task=>clips.some(clip=>clip.task===task.id));
-  const methods=[['Baseline','SmolVLA'],['Trex','T-Rex'],['TWLA','T-WLA'],['TWLA_Editor','T-WLA + Editor']];
+  const methods=[['Baseline','SmolVLA'],['Trex','T-Rex'],['TWLA','T-WLA w/o tactile'],['TWLA_Editor','T-WLA']];
   tasks.forEach((task,index) => {
     const taskMethods=methods.filter(([id])=>clips.some(clip=>clip.task===task.id && clip.method===id));
     const card=document.createElement('article');card.className='robot-case';card.id='task-'+task.id.toLowerCase();
