@@ -5,12 +5,12 @@ import { createHash } from 'node:crypto';
 const base = process.env.TWLA_PREVIEW_URL || 'http://localhost:4000/';
 
 test('the new hand-pose demonstration serves the supplied, unmodified MP4', async () => {
-  const response = await fetch(new URL('resources/videos/1193_Mesh.mp4', base));
+  const response = await fetch(new URL('resources/1193_mesh6.mp4', base));
   assert.equal(response.status, 200, 'Hand-pose video must be reachable');
   assert.match(response.headers.get('content-type') || '', /video\/mp4/);
   const bytes = Buffer.from(await response.arrayBuffer());
   assert.equal(createHash('sha256').update(bytes).digest('hex'),
-    'f202a3c026699359b9aba5cf79a21d4cf9d5b50e35a66db3e50d0287edc60348');
+    'ded9534b995e72a9cfe75b5e687e78d8378ec61dd963fa5be3875f623e2c0a27');
 });
 
 test('the paper overview image is served as a genuine PNG', async () => {
@@ -22,12 +22,16 @@ test('the paper overview image is served as a genuine PNG', async () => {
   assert.ok(bytes.readUInt32BE(16) >= 1800, 'Method labels need a high-resolution image');
 });
 
-test('all nine existing robot recordings and matching 3D assets remain reachable', async () => {
+test('all sixteen robot recordings and matching 3D assets remain reachable', async () => {
   const response = await fetch(new URL('resources/robot/manifest.json', base));
   assert.equal(response.status, 200);
   const clips = await response.json();
-  assert.equal(clips.length, 9);
-  assert.deepEqual([...new Set(clips.map(clip => clip.task))].sort(), ['Bag', 'Cup', 'Paper']);
+  assert.equal(clips.length, 16);
+  assert.deepEqual([...new Set(clips.map(clip => clip.task))].sort(), ['Bag', 'Cup', 'Egg', 'Paper']);
+  for (const task of ['Bag', 'Cup', 'Egg', 'Paper']) {
+    assert.deepEqual(clips.filter(clip => clip.task === task).map(clip => clip.method).sort(),
+      ['Baseline', 'TWLA', 'TWLA_Editor', 'Trex'].sort());
+  }
   for (const clip of clips) {
     for (const resource of ['sync.mp4', 'sync_poster.jpg', 'robot.glb']) {
       const media = await fetch(new URL(clip.path + resource, base), { method: 'HEAD' });
